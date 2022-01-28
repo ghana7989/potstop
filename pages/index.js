@@ -1,77 +1,146 @@
 // for next.js's <head> tag and rendering images
-import Head from 'next/head'
-import Image from 'next/image'
+import Head from 'next/head';
+import Image from 'next/image';
 
 // import the web3 library with setup from lib/web3.js
-import { web3 } from '../lib/web3';
+import {web3} from '../lib/web3';
 
 // import react hooks
-import { useState, useEffect } from 'react';
+import {useState, useEffect} from 'react';
 
 // all from our components folder
-import Account from '../components/Account'
-import EthName from '../components/EthName'
-import Answer from '../components/Answer'
-import AnswerForm from '../components/AnswerForm'
+import Account from '../components/Account';
+import EthName from '../components/EthName';
+import Answer from '../components/Answer';
+import AnswerForm from '../components/AnswerForm';
 
 export default function Home() {
-  // todo:
-  // 1. make the connect button work!
-  // 2. get the answers from the API (see /api/answers.js file)
-  // 3. add tipping like project 1
-  // 4. make the user name look good
-  // 5. let the user post their own reply
+	// todo:
+	// 1. make the connect button work!
+	// 2. get the answers from the API (see /api/answers.js file)
+	// 3. add tipping like project 1
+	// 4. make the user name look good
+	// 5. let the user post their own reply
 
-  return (
-    <main>
-      <header>
-        <h1>Potstop</h1>
+	const [accounts, setAccounts] = useState([]);
+	const [isLoggedIn, setIsLoggedIn] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
+	const [answers, setAnswers] = useState([]);
 
-        <form>
-          <input type="text" placeholder="Search" />
-        </form>
+	const connect = async () => {
+		const accounts = await window.ethereum.request({
+			method: 'eth_requestAccounts',
+		});
 
-        <button>Connect</button>
-      </header>
+		if (!accounts || accounts.length === 0) return;
+		setAccounts(accounts);
+	};
 
-      <section className="question">
-        <div className="main">
-          <h3>Feedback forum</h3>
-          <h2>Looking for feedback as a beginner</h2>
-          <p>Hey everyone, I&apos;m a new potter, just 4 weeks into my journey, and I&apos;m looking to get some feedback on what I&apos;ve made so far. I&apos;m particularly interested in how to make rustic looking bowls and pots, and I&apos;d love to know what the best tools to use would be!</p>
+	useEffect(() => {
+		if (accounts.length) {
+			setIsLoggedIn(true);
+			return;
+		}
+		setIsLoggedIn(false);
+	}, [accounts]);
 
-          <div className="slides">
-            <Image src="/image-1.jpg" width="600" height="800" />
-            <Image src="/image-2.jpg" width="600" height="800" />
-            <Image src="/image-3.jpg" width="600" height="800" />
-            <Image src="/image-4.jpg" width="600" height="800" />
-          </div>
-        </div>
-        <div className="meta">
-          
-          {/* EthName */}
-          <div className="eth-name">
-            <img src="https://ipfs.io/ipfs/QmbctVN8tPaDLiLysVDwThf7JTJhMejbSypZ4a3v5H2G3a" alt="Avatar of riklomas.eth" />
-            <div className="name">
-              <span className="primary">riklomas.eth</span>
-              <span className="secondary">0xb25bf3...aaf4</span>
-            </div>
-          </div>
-          {/* end EthName */}
+	useEffect(() => {
+		(async function () {
+			const accounts = await window.ethereum.request({
+				method: 'eth_accounts',
+			});
+			setAccounts(accounts);
+		})();
+		window.ethereum.on('accountsChanged', accounts => {
+			setAccounts(accounts);
+		});
+		fetch('/api/answers')
+			.then(res => res.json())
+			.then(data => {
+				setAnswers(data.answers);
+				setIsLoading(false);
+			});
+	}, []);
+	return (
+		<main>
+			<header>
+				<h1>HitMe</h1>
 
-        </div>
-      </section>
+				<form>
+					<input type='text' placeholder='Search' />
+				</form>
 
-      <section className="answers">
-        <div className="loading">Loading answers...</div>
-      </section>
+				<Account
+					connect={connect}
+					isLoggedIn={isLoggedIn}
+					account={accounts[0]}
+				/>
+			</header>
 
-      <Head>
-        <title>Looking for feedback as a beginner – Feedback forum – Potstop </title>
-        <meta property="og:title" content="Looking for feedback as a beginner on Potstop" />
-        <meta property="og:description" content="This is a project on the SuperHi Crypto + Web3 for Creatives course" />
-        <meta property="og:image" content="/social.png" />
-      </Head>
-    </main>
-  )
+			<section className='question'>
+				<div className='main'>
+					<h3>Feedback forum</h3>
+					<h2>Looking for feedback as a beginner</h2>
+					<p>
+						Hey everyone, I&apos;m a Software Developer, with just 11 months
+						professional experience into my journey, and I&apos;m looking to get
+						some feedback on what I&apos;ve made so far. I was learning
+						fullstack from past 2 years. Blockchain is a field that interested
+						me and it is just 1 week into blockchain that I am building this.
+						Please take time and give your feedback.
+					</p>
+
+					<div className='slides'>
+						<Image src='/image-1.jpg' width='600' height='800' alt='pots' />
+						<Image src='/image-2.jpg' width='600' height='800' alt='pots' />
+						<Image src='/image-3.jpg' width='600' height='800' alt='pots' />
+						<Image src='/image-4.jpg' width='600' height='800' alt='pots' />
+					</div>
+				</div>
+				<div className='meta'>
+					{/* EthName */}
+					<div className='eth-name'>
+						{/* eslint-disable-next-line @next/next/no-img-element */}
+						<img
+							src='https://ipfs.io/ipfs/QmbctVN8tPaDLiLysVDwThf7JTJhMejbSypZ4a3v5H2G3a'
+							alt='Avatar of riklomas.eth'
+						/>
+						<div className='name'>
+							<span className='primary'>0xb25bf3...aaf4</span>
+						</div>
+					</div>
+					{/* end EthName */}
+				</div>
+			</section>
+
+			<section className='answers'>
+				{isLoading ? (
+					<div className='loading'>Loading answers...</div>
+				) : (
+					answers.map((answer, index) => {
+						return (
+							<Answer
+								key={index}
+								accounts={accounts}
+								answer={answer}
+								isLoggedIn={isLoggedIn}
+								number={index}
+							/>
+						);
+					})
+				)}
+			</section>
+
+			<Head>
+				<title>
+					Looking for feedback as a beginner – Feedback forum – HitMe
+				</title>
+				<meta
+					property='og:title'
+					content='Looking for feedback as a beginner on HitMe'
+				/>
+				<meta property='og:image' content='/social.png' />
+			</Head>
+		</main>
+	);
 }
