@@ -129,6 +129,13 @@ export default function Home() {
 						);
 					})
 				)}
+				{isLoggedIn && (
+					<AnswerForm
+						accounts={accounts}
+						isLoggedIn={isLoggedIn}
+						setAnswers={setAnswers}
+					/>
+				)}
 			</section>
 
 			<Head>
