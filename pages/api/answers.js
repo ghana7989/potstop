@@ -9,11 +9,11 @@ const markdown = new MarkdownIt();
 // usually this would come from a database
 // but to keep things simple, we're setting it here
 const answers = [
-	`That's fantastic work for a beginner! [Arteza](#) have great sculpting tools that you may want to check out!`,
-	`From the looks of the clay, it could be a touch dry. 
+	`That's fantastic work for a beginner!`,
+	`Awesome Work and expect a great future ahead. 
   
-  Maybe consider a _slight_ bit more water on your hands while you shape and you may find that a little easier.`,
-	`I disagree with reply #3, I think the clay looks fine, no more water needed. `,
+  Start using external packages and you may find that a little easier.`,
+	`I disagree with reply #3, I think as a beginner one needs to know what is happening under the hood `,
 ].map(a => markdown.render(a));
 
 // what happens when we ask for /api/answers
